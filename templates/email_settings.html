@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Email Settings{% endblock %}
+
+{% block content %}
+<h2>Email Settings</h2>
+
+<form method="POST">
+    <div>
+        <label>SMTP Email</label><br>
+        <input type="email" name="smtp_email" required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>SMTP Host</label><br>
+        <input type="text" name="smtp_host" placeholder="smtp.gmail.com" required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>SMTP Port</label><br>
+        <input type="number" name="smtp_port" value="587" required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>
+            <input type="checkbox" name="smtp_tls" checked>
+            Use TLS
+        </label>
+    </div>
+
+    <br>
+
+    <div>
+        <label>SMTP Password</label><br>
+        <input type="password" name="smtp_password" required>
+    </div>
+
+    <br>
+
+    <button type="submit">Save Settings</button>
+</form>
+
+<hr>
+
+<p>
+    <a href="/test-email">Send Test Email</a>
+</p>
+
+<p>
+    <a href="/dashboard">Back to Dashboard</a>
+</p>
+{% endblock %}

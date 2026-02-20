@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Dashboard</h2>
+
+<p>
+    Logged in as <strong>{{ current_user.email }}</strong>
+</p>
+
+<p>
+    <a href="/add">Add Client</a> |
+    <a href="/email-settings">Email Settings</a> |
+    <a href="/logout">Logout</a>
+</p>
+
+<hr>
+
+{% if clients %}
+    <h3>Your Clients</h3>
+    <ul>
+        {% for client in clients %}
+            <li>
+                {{ client.name }} ({{ client.email }}) —
+                Follow-up: {{ client.followup_date }}
+                {% if client.sent %}
+                    ✅ Sent
+                {% else %}
+                    ⏳ Pending
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p><em>No clients yet.</em></p>
+{% endif %}
+
+{% endblock %}

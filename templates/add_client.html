@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Add Client{% endblock %}
+
+{% block content %}
+<h2>Add Client</h2>
+
+<form method="POST">
+    <div>
+        <label>Name</label><br>
+        <input type="text" name="name" required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Email</label><br>
+        <input type="email" name="email" required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Follow-up Date</label><br>
+        <input type="date" name="date" required>
+    </div>
+
+    <br>
+
+    <button type="submit">Save Client</button>
+</form>
+
+<p>
+    <a href="/dashboard">Back to Dashboard</a>
+</p>
+{% endblock %}
