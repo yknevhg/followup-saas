@@ -53,9 +53,6 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    """
-    Public landing page (no login required)
-    """
     return render_template("home.html")
 
 
@@ -160,6 +157,9 @@ def test_email():
         return f"Test email failed: {str(e)}"
 
 
-# IMPORTANT:
-# We do NOT call app.run()
-# Render starts the app using Gunicorn
+# ---------------- LOCAL RUN ----------------
+# This runs only when you execute: python app.py
+# Render ignores this and uses Gunicorn
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5000, debug=True)
