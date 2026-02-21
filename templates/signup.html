@@ -1,29 +1,24 @@
 {% extends "base.html" %}
-
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
 <h2>Create Account</h2>
 
 <form method="POST">
-    <div>
-        <label>Email</label><br>
+    <div class="section">
+        <label>Email</label>
         <input type="email" name="email" required>
     </div>
 
-    <br>
-
-    <div>
-        <label>Password</label><br>
+    <div class="section">
+        <label>Password</label>
         <input type="password" name="password" required>
     </div>
 
-    <br>
-
-    <button type="submit">Sign Up</button>
+    <button type="submit">Create Account</button>
 </form>
 
-<p>
-    <a href="/">Back to login</a>
+<p class="muted" style="margin-top:20px;">
+    Already have an account? <a href="/login">Login</a>
 </p>
 {% endblock %}

@@ -22,7 +22,22 @@
 
     <div>
         <label>Follow-up Date</label><br>
-        <input type="date" name="date" required>
+        <input type="date" name="date">
+    </div>
+
+    <br>
+
+    <div>
+        <label>Or choose follow-up delay</label><br>
+        <select name="delay">
+            <option value="">-- Select delay --</option>
+            <option value="2">2 days</option>
+            <option value="5">5 days</option>
+            <option value="7">7 days</option>
+        </select>
+        <p style="font-size:13px;color:#666;">
+            If a delay is selected, the follow-up date will be set automatically.
+        </p>
     </div>
 
     <br>

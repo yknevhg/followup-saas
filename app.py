@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, abort
 from flask_login import (
     LoginManager,
     login_user,
@@ -7,7 +7,7 @@ from flask_login import (
     current_user,
 )
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta, date
 import os
 
 from models import db, User, Client
@@ -21,10 +21,8 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret")
 database_url = os.environ.get("DATABASE_URL")
 
 if database_url:
-    # Render provides a PostgreSQL database URL
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 else:
-    # Local development fallback (SQLite)
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         "sqlite:///" + os.path.join(basedir, "database.db")
@@ -49,7 +47,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# ---------------- PUBLIC HOME ----------------
+# ---------------- HOME ----------------
 
 @app.route("/")
 def home():
@@ -72,11 +70,14 @@ def login():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
+        email = request.form["email"]
+
+        if User.query.filter_by(email=email).first():
+            return "Account already exists. Please login instead."
+
         hashed = generate_password_hash(request.form["password"])
-        user = User(
-            email=request.form["email"],
-            password=hashed,
-        )
+        user = User(email=email, password=hashed)
+
         db.session.add(user)
         db.session.commit()
         return redirect("/login")
@@ -97,7 +98,26 @@ def logout():
 @login_required
 def dashboard():
     clients = Client.query.filter_by(user_id=current_user.id).all()
-    return render_template("dashboard.html", clients=clients)
+    today = date.today()
+
+    dashboard_clients = []
+    for client in clients:
+        days_remaining = (client.followup_date - today).days
+
+        dashboard_clients.append({
+            "id": client.id,
+            "name": client.name,
+            "email": client.email,
+            "followup_date": client.followup_date,
+            "sent": client.sent,
+            "days_remaining": days_remaining,
+        })
+
+    return render_template(
+    "dashboard.html",
+    clients=dashboard_clients,
+    smtp_verified=current_user.smtp_verified
+)
 
 
 # ---------------- ADD CLIENT ----------------
@@ -106,19 +126,68 @@ def dashboard():
 @login_required
 def add_client():
     if request.method == "POST":
+        delay = request.form.get("delay")
+        date_input = request.form.get("date")
+
+        if delay:
+            followup_date = date.today() + timedelta(days=int(delay))
+        else:
+            followup_date = datetime.strptime(date_input, "%Y-%m-%d").date()
+
         client = Client(
             user_id=current_user.id,
             name=request.form["name"],
             email=request.form["email"],
-            followup_date=datetime.strptime(
-                request.form["date"], "%Y-%m-%d"
-            ).date(),
+            followup_date=followup_date,
         )
+
         db.session.add(client)
         db.session.commit()
         return redirect("/dashboard")
 
     return render_template("add_client.html")
+
+
+# ---------------- EDIT CLIENT ----------------
+
+@app.route("/edit/<int:client_id>", methods=["GET", "POST"])
+@login_required
+def edit_client(client_id):
+    client = Client.query.filter_by(
+        id=client_id, user_id=current_user.id
+    ).first()
+
+    if not client:
+        abort(404)
+
+    if request.method == "POST":
+        client.name = request.form["name"]
+        client.email = request.form["email"]
+        client.followup_date = datetime.strptime(
+            request.form["date"], "%Y-%m-%d"
+        ).date()
+
+        db.session.commit()
+        return redirect("/dashboard")
+
+    return render_template("edit_client.html", client=client)
+
+
+# ---------------- DELETE CLIENT ----------------
+
+@app.route("/delete/<int:client_id>", methods=["POST"])
+@login_required
+def delete_client(client_id):
+    client = Client.query.filter_by(
+        id=client_id, user_id=current_user.id
+    ).first()
+
+    if not client:
+        abort(404)
+
+    db.session.delete(client)
+    db.session.commit()
+    return redirect("/dashboard")
 
 
 # ---------------- EMAIL SETTINGS ----------------
@@ -140,26 +209,7 @@ def email_settings():
     return render_template("email_settings.html")
 
 
-# ---------------- TEST EMAIL ----------------
-
-@app.route("/test-email")
-@login_required
-def test_email():
-    try:
-        from emailer import send_test_email
-
-        send_test_email(current_user)
-        current_user.smtp_verified = True
-        db.session.commit()
-        return "Test email sent successfully. SMTP verified."
-
-    except Exception as e:
-        return f"Test email failed: {str(e)}"
-
-
 # ---------------- LOCAL RUN ----------------
-# This runs only when you execute: python app.py
-# Render ignores this and uses Gunicorn
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

@@ -3,44 +3,121 @@
 <head>
     <title>Automatic Client Follow-Ups for Freelancers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #222;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 900px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        ul {
+            padding-left: 18px;
+            font-size: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .cta {
+            margin-top: 25px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .secondary {
+            margin-left: 18px;
+            font-size: 15px;
+            color: #000;
+        }
+
+        .badge {
+            font-size: 13px;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body style="font-family: Arial; max-width: 750px; margin: 60px auto; line-height: 1.7;">
 
-    <h1>Stop losing freelance deals because you forgot to follow up.</h1>
+<body>
 
-    <p>
-        Freelancers lose clients every week simply because they forget to send a reminder.
-        This tool automatically sends follow-up emails so you never miss an opportunity.
-    </p>
+<div class="container">
 
-    <h3>How it works</h3>
-    <ol>
-        <li>Add a client and their email</li>
-        <li>Choose when you want to follow up</li>
-        <li>The email is sent automatically</li>
-    </ol>
+    <!-- LEFT -->
+    <div>
+        <h1>Stop losing freelance deals because you forgot to follow up.</h1>
 
-    <h3>Why freelancers use this</h3>
-    <ul>
-        <li>No awkward manual chasing</li>
-        <li>No missed follow-ups</li>
-        <li>No complex CRM</li>
-        <li>Simple and focused</li>
-    </ul>
+        <p>
+            Automatically send follow-up emails so you never miss a client again.
+            No CRM. No spreadsheets. Just simple follow-ups.
+        </p>
 
-    <br>
+        <div class="cta">
+            <a href="/signup" class="button">Start Free</a>
+            <a href="/login" class="secondary">Login</a>
+        </div>
 
-    <a href="/signup" style="padding:12px 25px; background:black; color:white; text-decoration:none;">
-        Start Free
-    </a>
+        <div class="badge">
+            Free during beta · Built for freelancers
+        </div>
+    </div>
 
-    <a href="/login" style="margin-left:20px;">
-        Login
-    </a>
+    <!-- RIGHT -->
+    <div>
+        <ul>
+            <li>Add a client</li>
+            <li>Choose follow-up date</li>
+            <li>Email sent automatically</li>
+            <li>No awkward chasing</li>
+            <li>No missed follow-ups</li>
+            <li>No complex CRM</li>
+        </ul>
+    </div>
 
-    <p style="margin-top:50px; font-size:14px; color:gray;">
-        Built for freelancers who want to close more deals without extra tools.
-    </p>
+</div>
 
 </body>
 </html>

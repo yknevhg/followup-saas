@@ -1,39 +1,106 @@
 {% extends "base.html" %}
-
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+
 <h2>Dashboard</h2>
 
-<p>
+<p class="muted">
     Logged in as <strong>{{ current_user.email }}</strong>
 </p>
 
-<p>
-    <a href="/add">Add Client</a> |
-    <a href="/email-settings">Email Settings</a> |
-    <a href="/logout">Logout</a>
-</p>
+{% if smtp_verified %}
+    <div style="margin:15px 0; padding:10px 14px; background:#eafaf1; color:#1e8449; border-radius:6px; font-size:14px;">
+        ✅ Email connected — follow-ups will be sent automatically
+    </div>
+{% else %}
+    <div style="margin:15px 0; padding:10px 14px; background:#fdecea; color:#922b21; border-radius:6px; font-size:14px;">
+        ⚠️ Email not configured —
+        <a href="/email-settings" style="color:#922b21; text-decoration:underline;">
+            set up email
+        </a>
+        to enable follow-ups
+    </div>
+{% endif %}
 
-<hr>
+<hr style="margin:25px 0; border:none; border-top:1px solid #eee;">
+
+<h3>Your Clients</h3>
 
 {% if clients %}
-    <h3>Your Clients</h3>
-    <ul>
-        {% for client in clients %}
-            <li>
-                {{ client.name }} ({{ client.email }}) —
-                Follow-up: {{ client.followup_date }}
-                {% if client.sent %}
-                    ✅ Sent
-                {% else %}
-                    ⏳ Pending
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+<ul class="dashboard-list">
+    {% for client in clients %}
+    <li style="display:flex; justify-content:space-between; align-items:center;">
+
+        <div>
+            <strong>{{ client.name }}</strong><br>
+            <span class="muted">{{ client.email }}</span><br>
+
+            {% if client.days_remaining > 0 %}
+                <span class="muted">
+                    Follow-up in {{ client.days_remaining }} day{{ 's' if client.days_remaining != 1 else '' }}
+                </span>
+            {% elif client.days_remaining == 0 %}
+                <span style="color:#b58900;">Follow-up today</span>
+            {% else %}
+                <span style="color:#c0392b;">
+                    Overdue by {{ client.days_remaining | abs }} day{{ 's' if client.days_remaining | abs != 1 else '' }}
+                </span>
+            {% endif %}
+        </div>
+
+        <div style="text-align:right;">
+            {% if client.sent %}
+                <span style="color:green;">Sent</span>
+            {% else %}
+                <span style="color:#b58900;">Pending</span>
+            {% endif %}
+
+            <div style="margin-top:8px;">
+                <a href="/edit/{{ client.id }}" style="font-size:13px; margin-right:10px;">
+                    Edit
+                </a>
+
+                <form method="POST"
+                      action="/delete/{{ client.id }}"
+                      style="display:inline;"
+                      onsubmit="return confirm('Are you sure you want to delete this client?');">
+                    <button type="submit"
+                            style="background:none; border:none; color:#c0392b; font-size:13px; cursor:pointer;">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </li>
+    {% endfor %}
+</ul>
 {% else %}
-    <p><em>No clients yet.</em></p>
+<div style="
+    padding:30px;
+    background:#fafafa;
+    border-radius:8px;
+    text-align:center;
+    border:1px solid #eee;
+">
+
+    <h3 style="margin-top:0;">No proposals added yet</h3>
+
+    <p class="muted" style="margin-bottom:20px;">
+        Add your first design proposal and never forget to follow up again.
+        We’ll automatically remind your client at the right time.
+    </p>
+
+    <a href="/add">
+        <button>Add Your First Proposal</button>
+    </a>
+
+    <p class="muted" style="margin-top:15px; font-size:13px;">
+        Most designers follow up 3–7 days after sending a proposal.
+    </p>
+
+</div>
 {% endif %}
 
 {% endblock %}
