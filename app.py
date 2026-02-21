@@ -49,15 +49,26 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+# ---------------- PUBLIC HOME ----------------
+
+@app.route("/")
+def home():
+    """
+    Public landing page (no login required)
+    """
+    return render_template("home.html")
+
+
 # ---------------- AUTH ----------------
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         user = User.query.filter_by(email=request.form["email"]).first()
         if user and check_password_hash(user.password, request.form["password"]):
             login_user(user)
             return redirect("/dashboard")
+
     return render_template("login.html")
 
 
@@ -71,7 +82,8 @@ def signup():
         )
         db.session.add(user)
         db.session.commit()
-        return redirect("/")
+        return redirect("/login")
+
     return render_template("signup.html")
 
 
@@ -149,5 +161,5 @@ def test_email():
 
 
 # IMPORTANT:
-# We do NOT call app.run() here.
-# Render will use Gunicorn to start the app.
+# We do NOT call app.run()
+# Render starts the app using Gunicorn
